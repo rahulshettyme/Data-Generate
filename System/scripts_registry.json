@@ -1,0 +1,449 @@
+[
+  {
+    "name": "Add Farmer Tag.py",
+    "filename": "Add_Farmer_Tag.py",
+    "team": "QA",
+    "description": "Adds a tag to a farmer.",
+    "expected_columns": [
+      "Farmer ID",
+      "Tag Name"
+    ],
+    "columns": [
+      {
+        "name": "Farmer ID",
+        "type": "Optional",
+        "description": "Farmer ID (or use Code)"
+      },
+      {
+        "name": "Farmer Code",
+        "type": "Optional",
+        "description": "Farmer Code (if ID not known)"
+      },
+      {
+        "name": "Tag Name",
+        "type": "Mandatory",
+        "description": "Name of Tag to add"
+      }
+    ],
+    "requiresLogin": true
+  },
+  {
+    "name": "Add Places",
+    "team": "QA",
+    "expected_columns": [
+      "name",
+      "type",
+      "latitude",
+      "longitude",
+      "address"
+    ],
+    "description": "### 🔄 Execution Flow Analysis\n\n1. **Setup & Context**:\n   - User uploads the Excel template after login.\n   - System generates an auth token from credentials to be used by the script.\n2. **Data Ingestion**:\n   - Script reads row data, specifically expecting: `name`, `type`, `latitude`, `longitude`, `address`.\n3. **Address Handling (Address Generator)**:\n   - **Method**: Imports and calls `get_location_details` from `RS_address_generate`.\n   - **Logic**: Uses Google Geocoding API (via helper script) to resolve Latitude/Longitude/Address.\n   - **Outcome**: Updates row with standardized address fields.\n4. **API Interaction (POST)**:\n   - **Target**: Hits endpoint `{env_url.rstrip('/')}/services/farm/api/place`\n   - **Payload**: Uses row data/config as JSON payload.\n   - **Response**: Validates status code (e.g. 200 OK).\n5. **Failure Handling**:\n   - **Try/Catch**: Wraps logic to catch API or Data errors.\n6. **Completion**:\n   - Returns the processed row sequence.\n   - User can download the final result Excel file.\n",
+    "filename": "Add_Places.py"
+  },
+  {
+    "name": "Area Audit.py",
+    "filename": "Area_Audit.py",
+    "team": "Both",
+    "description": "Performs area audit for plots, generating coordinates if needed.",
+    "expected_columns": [
+      "CAName",
+      "CA_ID"
+    ],
+    "columns": [
+      {
+        "name": "CAName",
+        "type": "Mandatory",
+        "description": "Croppable Area Name"
+      },
+      {
+        "name": "CA_ID",
+        "type": "Mandatory",
+        "description": "Croppable Area ID"
+      },
+      {
+        "name": "Coordinates",
+        "type": "Optional",
+        "description": "Existing Coords (JSON)"
+      }
+    ],
+    "requiresLogin": true
+  },
+  {
+    "name": "Create Asset.py",
+    "filename": "Create_Asset.py",
+    "team": "QA",
+    "description": "Creates assets/plots for farmers.",
+    "expected_columns": [
+      "Asset Name",
+      "Farmer ID",
+      "Farmer Code",
+      "Soil Type",
+      "Irrigation Type",
+      "Address"
+    ],
+    "columns": [
+      {
+        "name": "Asset Name",
+        "type": "Mandatory",
+        "description": "Asset/Plot Name"
+      },
+      {
+        "name": "Farmer ID",
+        "type": "Optional",
+        "description": "ID of the Owner Farmer"
+      },
+      {
+        "name": "Farmer Code",
+        "type": "Optional",
+        "description": "Unique Code of the Owner Farmer"
+      },
+      {
+        "name": "Soil Type",
+        "type": "Mandatory",
+        "description": "Exact name of Soil Type"
+      },
+      {
+        "name": "Irrigation Type",
+        "type": "Mandatory",
+        "description": "Exact name of Irrigation Type"
+      },
+      {
+        "name": "Address",
+        "type": "Mandatory",
+        "description": "Address for Geocoding"
+      },
+      {
+        "name": "Declared Area",
+        "type": "Optional",
+        "description": "Area count"
+      }
+    ],
+    "requiresLogin": true
+  },
+  {
+    "name": "Create Farmer.py",
+    "filename": "Create_Farmer.py",
+    "team": "QA",
+    "description": "Creates farmers with automatic geocoding.",
+    "expected_columns": [
+      "Farmer Name",
+      "Farmer Code",
+      "Phone Number",
+      "Address"
+    ],
+    "columns": [
+      {
+        "name": "Farmer Name",
+        "type": "Mandatory",
+        "description": "Farmer Name"
+      },
+      {
+        "name": "Farmer Code",
+        "type": "Mandatory",
+        "description": "Unique Code"
+      },
+      {
+        "name": "Phone Number",
+        "type": "Mandatory",
+        "description": "Mobile (+CC inside or default +91)"
+      },
+      {
+        "name": "Address",
+        "type": "Optional",
+        "description": "Text address for geocoding"
+      },
+      {
+        "name": "AssignedTo",
+        "type": "Optional",
+        "description": "User ID to assign"
+      }
+    ],
+    "requiresLogin": true,
+    "allowAdditionalAttributes": true
+  },
+  {
+    "name": "Generate Coordinates.py",
+    "filename": "Generate_Coordinates.py",
+    "team": "QA",
+    "description": "Generates 1-acre square coordinates within the configured boundary.",
+    "expected_columns": [
+      "CAName",
+      "CA_ID"
+    ],
+    "columns": [
+      {
+        "name": "CAName",
+        "type": "Mandatory",
+        "description": "Croppable Area Name"
+      },
+      {
+        "name": "CA_ID",
+        "type": "Mandatory",
+        "description": "Croppable Area ID"
+      }
+    ],
+    "requiresLogin": false,
+    "isReusable": true
+  },
+  {
+    "name": "RS_address_generate.py",
+    "display_name": "Address Generator",
+    "team": "QA",
+    "isReusable": true,
+    "requiresLogin": false,
+    "description": "Fetch addresses/lat-lng from Excel, query Google Geocode, return address JSONs.",
+    "expected_columns": [
+      "Address"
+    ],
+    "columns": [
+      {
+        "name": "Address",
+        "type": "Optional",
+        "description": "Address text to geocode"
+      },
+      {
+        "name": "Latitude",
+        "type": "Optional",
+        "description": "Latitude for reverse geocoding"
+      },
+      {
+        "name": "Longitude",
+        "type": "Optional",
+        "description": "Longitude for reverse geocoding"
+      }
+    ]
+  },
+  {
+    "name": "PR Enable",
+    "filename": "PR Enable.py",
+    "team": "QA",
+    "description": "Draft Script",
+    "status": "active",
+    "expected_columns": [
+      "croppableAreaId",
+      "CA_Name",
+      "farmerId",
+      "status",
+      "message",
+      "SRPlotID",
+      "Response"
+    ],
+    "requiresLogin": true,
+    "comments": ""
+  },
+  {
+    "name": "PR Disable",
+    "filename": "PR Disable.py",
+    "team": "QA",
+    "description": "Draft Script",
+    "status": "active",
+    "expected_columns": [
+      "id",
+      "name",
+      "deletion response",
+      "deletion status",
+      "request id"
+    ],
+    "requiresLogin": true,
+    "comments": ""
+  },
+  {
+    "name": "Add Asset Tag.py",
+    "filename": "Add_Asset_Tag.py",
+    "team": "Unassigned",
+    "description": "User Script",
+    "expected_columns": [],
+    "requiresLogin": true,
+    "generation_prompt": "Script Name: Add Asset Tag\nExcel Columns: Asset Name, Asset ID, Tag, Tag ID, Status, API_Response\n\nStep 1 [API]:\n  - Step/Variable Name: Asset Tag\n  - Call GET /services/master/api/filter?type=ASSET&size=5000\n  - Payload Type: QUERY\n  - Expected Response: [ {  \"id\" : 3410602,  \"name\" : \"maxtest\",  \"clientId\" : \"f999d82e-5b66-412c-8d68-f9d2f37ac145\",  \"tagType\" : \"ASSET\",  \"validFrom\" : \"2025-07-01T00:00:00Z\",  \"validTill\" : \"2026-07-09T00:00:00Z\",  \"status\" : \"Active\",  \"description\" : null}, {  \"id\" : 5883653,  \"name\" : \"Raj asset tag 01\",  \"clientId\" : \"583bbb76-7d16-4210-81fc-0f8e279ca799\",  \"tagType\" : \"ASSET\",  \"validFrom\" : \"2025-07-23T00:00:00Z\",  \"validTill\" : \"2025-07-31T00:00:00Z\",  \"status\" : \"Active\",  \"description\" : null}, {  \"id\" : 5883654,  \"name\" : \"Raj asset tag 02\",  \"clientId\" : \"1f526ee7-fe9a-4722-acd0-0fa89dba6e3b\",  \"tagType\" : \"ASSET\",  \"validFrom\" : \"2025-07-01T00:00:00Z\",  \"validTill\" : \"2025-07-31T00:00:00Z\",  \"status\" : \"Active\",  \"description\" : null}, {  \"id\" : 5900255,  \"name\" : \"Raja asset tag UAT\",  \"clientId\" : \"ce66a4f3-cfa2-4f8d-99e3-349a94567ce7\",  \"tagType\" : \"ASSET\",  \"validFrom\" : \"2025-08-12T00:00:00Z\",  \"validTill\" : \"2025-08-31T00:00:00Z\",  \"status\" : \"Active\",  \"description\" : null} ]\n  - Instructions: read asset_tag_api response, compare attribute \"name\" with excel column 'Tag'. If data found continue. Else fail row by writing 'Fail' in column 'Status' and 'Tag not Found' in column 'API_Response'. Keep the response for processing other rows and to use in 'asset_update_api'\n\nStep 2 [API]:\n  - Step/Variable Name: Asset Details\n  - Call GET /services/farm/api/assets/{Asset ID}\n  - Payload Type: QUERY\n  - Expected Response: {  \"id\" : 2408852,  \"name\" : \"RS 9122  A 2\",  \"companyStatus\" : \"ACTIVE\",  \"data\" : {    \"rajaAssetAddAttr\" : \"2026-01-02T00:00:00.000Z\"  },  \"ownerId\" : 2405501,  \"ownerFirstName\" : \"RS F 060401\",  \"soilType\" : {    \"id\" : 1056,    \"name\" : \"Clay Loam\",    \"description\" : \"Clay Loam Soil Type Description\",    \"data\" : null,    \"clientId\" : \"115825fe-a0d3-4c95-a831-1dc4fa93d261\"  },  \"irrigationType\" : {    \"id\" : 1101,    \"name\" : \"Bore well\",    \"description\" : \"Bore well Irrigation Type Description\",    \"clientId\" : \"8db73384-94ab-43ad-9827-0ca9f30e2eea\",    \"data\" : null  },  \"surveyNumber\" : null,  \"leased\" : null,  \"auditedArea\" : {    \"count\" : null  },  \"usableArea\" : {    \"count\" : 0.0  },  \"declaredArea\" : {    \"count\" : 10.0  },  \"availableArea\" : null,  \"images\" : { },  \"assetStatus\" : \"UNAVAILABLE\",  \"clientId\" : \"bf93cb5a-28c1-4aac-92c6-0ccfe241a31d\",  \"address\" : {    \"id\" : 2408902,    \"formattedAddress\" : \"Madhugiri, Karnataka 572132, India\",    \"postalCode\" : \"572132\",    \"locality\" : \"Madhugiri\",    \"data\" : null,    \"administrativeAreaLevel5\" : null,    \"administrativeAreaLevel4\" : null,    \"administrativeAreaLevel3\" : null,    \"administrativeAreaLevel2\" : \"Bangalore Division\",    \"administrativeAreaLevel1\" : \"Karnataka\",    \"country\" : \"India\",    \"latitude\" : 13.6643166,    \"longitude\" : 77.20889869999999,    \"placeId\" : \"ChIJsfkoVqO0sTsRLbvVqd06cTU\",    \"sublocalityLevel1\" : \"\",    \"sublocalityLevel2\" : \"\",    \"sublocalityLevel3\" : null,    \"sublocalityLevel4\" : null,    \"sublocalityLevel5\" : null,    \"houseNo\" : \"\",    \"buildingName\" : \"\",    \"landmark\" : \"\",    \"clientId\" : \"87210ad5-d7d5-48fe-9079-e4944ff813e1\"  },  \"ownerCode\" : \"RSF060401\",  \"nameCounter\" : null,  \"acreSquareAssetId\" : null,  \"lastModifiedDate\" : \"2026-01-02T22:37:06.214Z\",  \"ownerClientId\" : \"53cb461e-72cc-4e6a-b1d7-f7defdb4d781\",  \"externalId\" : null,  \"massUpload\" : false,  \"deleted\" : false}\n  - Instructions: read asset API response, if data found continue. Else fail row by writing 'Fail' in column 'Status' and 'Asset not Found' in column 'API_Response'\n\nStep 3 [API]:\n  - Step/Variable Name: Asset Update\n  - Call PUT /services/farm/api/assets\n  - Payload Type: DTO_FILE\n  - Payload Example: {    \"id\": 2408852,    \"name\": \"RS 9122  A 2\",    \"companyStatus\": \"ACTIVE\",    \"data\": {        \"tags\": [5883653, 5883654],        \"rajaAssetAddAttr\": \"2026-01-02T00:00:00.000Z\"    },    \"ownerId\": 2405501,    \"ownerFirstName\": \"RS F 060401\",    \"soilType\": {        \"id\": 1056,        \"name\": \"Clay Loam\",        \"description\": \"Clay Loam Soil Type Description\",        \"data\": null,        \"clientId\": \"115825fe-a0d3-4c95-a831-1dc4fa93d261\"    },    \"irrigationType\": {        \"id\": 1101,        \"name\": \"Bore well\",        \"description\": \"Bore well Irrigation Type Description\",        \"clientId\": \"8db73384-94ab-43ad-9827-0ca9f30e2eea\",        \"data\": null    },    \"surveyNumber\": null,    \"leased\": null,    \"auditedArea\": {        \"enableConversion\": \"true\",        \"unit\": \"ACRE\"    },    \"usableArea\": {        \"count\": 0    },    \"declaredArea\": {        \"count\": 10,        \"enableConversion\": \"true\",        \"unit\": \"ACRE\"    },    \"availableArea\": null,    \"images\": {},    \"assetStatus\": \"UNAVAILABLE\",    \"clientId\": \"bf93cb5a-28c1-4aac-92c6-0ccfe241a31d\",    \"address\": {        \"id\": 2408902,        \"formattedAddress\": \"Madhugiri, Karnataka 572132, India\",        \"postalCode\": \"572132\",        \"locality\": \"Madhugiri\",        \"data\": null,        \"administrativeAreaLevel5\": null,        \"administrativeAreaLevel4\": null,        \"administrativeAreaLevel3\": null,        \"administrativeAreaLevel2\": \"Bangalore Division\",        \"administrativeAreaLevel1\": \"Karnataka\",        \"country\": \"India\",        \"latitude\": 13.6643166,        \"longitude\": 77.20889869999999,        \"placeId\": \"ChIJsfkoVqO0sTsRLbvVqd06cTU\",        \"sublocalityLevel1\": \"\",        \"sublocalityLevel2\": \"\",        \"sublocalityLevel3\": null,        \"sublocalityLevel4\": null,        \"sublocalityLevel5\": null,        \"houseNo\": \"\",        \"buildingName\": \"\",        \"landmark\": \"\",        \"clientId\": \"87210ad5-d7d5-48fe-9079-e4944ff813e1\"    },    \"ownerCode\": \"RSF060401\",    \"nameCounter\": null,    \"acreSquareAssetId\": null,    \"lastModifiedDate\": \"2023-08-23T10:23:18.543Z\",    \"ownerClientId\": \"53cb461e-72cc-4e6a-b1d7-f7defdb4d781\",    \"externalId\": null,    \"massUpload\": false,    \"deleted\": false}\n  - Expected Response: {  \"id\" : 2408852,  \"name\" : \"RS 9122  A 2\",  \"companyStatus\" : \"ACTIVE\",  \"data\" : {    \"rajaAssetAddAttr\" : \"2026-01-02T00:00:00.000Z\",    \"tags\" : [ 5883653, 5883654 ]  },  \"ownerId\" : 2405501,  \"ownerFirstName\" : \"RS F 060401\",  \"soilType\" : {    \"id\" : 1056,    \"name\" : \"Clay Loam\",    \"description\" : \"Clay Loam Soil Type Description\",    \"data\" : null,    \"clientId\" : \"115825fe-a0d3-4c95-a831-1dc4fa93d261\"  },  \"irrigationType\" : {    \"id\" : 1101,    \"name\" : \"Bore well\",    \"description\" : \"Bore well Irrigation Type Description\",    \"clientId\" : \"8db73384-94ab-43ad-9827-0ca9f30e2eea\",    \"data\" : null  },  \"surveyNumber\" : null,  \"leased\" : null,  \"auditedArea\" : {    \"count\" : null  },  \"usableArea\" : {    \"count\" : 0.0  },  \"declaredArea\" : {    \"count\" : 10.0  },  \"availableArea\" : null,  \"images\" : { },  \"assetStatus\" : \"UNAVAILABLE\",  \"clientId\" : \"bf93cb5a-28c1-4aac-92c6-0ccfe241a31d\",  \"address\" : {    \"id\" : 2408902,    \"formattedAddress\" : \"Madhugiri, Karnataka 572132, India\",    \"postalCode\" : \"572132\",    \"locality\" : \"Madhugiri\",    \"data\" : null,    \"administrativeAreaLevel5\" : null,    \"administrativeAreaLevel4\" : null,    \"administrativeAreaLevel3\" : null,    \"administrativeAreaLevel2\" : \"Bangalore Division\",    \"administrativeAreaLevel1\" : \"Karnataka\",    \"country\" : \"India\",    \"latitude\" : 13.6643166,    \"longitude\" : 77.20889869999999,    \"placeId\" : \"ChIJsfkoVqO0sTsRLbvVqd06cTU\",    \"sublocalityLevel1\" : \"\",    \"sublocalityLevel2\" : \"\",    \"sublocalityLevel3\" : null,    \"sublocalityLevel4\" : null,    \"sublocalityLevel5\" : null,    \"houseNo\" : \"\",    \"buildingName\" : \"\",    \"landmark\" : \"\",    \"clientId\" : \"87210ad5-d7d5-48fe-9079-e4944ff813e1\"  },  \"ownerCode\" : \"RSF060401\",  \"nameCounter\" : null,  \"acreSquareAssetId\" : null,  \"lastModifiedDate\" : \"2026-01-02T22:37:06.214Z\",  \"ownerClientId\" : \"53cb461e-72cc-4e6a-b1d7-f7defdb4d781\",  \"externalId\" : null,  \"massUpload\" : false,  \"deleted\" : false}\n  - Instructions: get the response from asset_api. Update the attribute \"data\" with attribute \"tags\": [5883653]. If already tags is present add comma separated like \"tags\": [5883653, 5883654]. send the whole response with updated data section as body for 'asset_update_api'\n\n"
+  },
+  {
+    "name": "AddVariety.py",
+    "filename": "AddVariety.py",
+    "team": "QA",
+    "description": "User Script",
+    "expected_columns": [
+      "name",
+      "nickName",
+      "expectedHarvestDays",
+      "cropName",
+      "cropId",
+      "expectedYield",
+      "expectedYieldUnits",
+      "refrenceAreaUnits"
+    ],
+    "columns": [
+      {
+        "name": "name",
+        "type": "Mandatory",
+        "description": "Variety Name"
+      },
+      {
+        "name": "nickName",
+        "type": "Mandatory",
+        "description": "Variety Nickname/Code"
+      },
+      {
+        "name": "expectedHarvestDays",
+        "type": "Mandatory",
+        "description": "Days to Harvest"
+      },
+      {
+        "name": "cropName",
+        "type": "Mandatory",
+        "description": "Parent Crop Name"
+      },
+      {
+        "name": "cropId",
+        "type": "Optional",
+        "description": "Parent Crop ID (if known)"
+      },
+      {
+        "name": "expectedYield",
+        "type": "Optional",
+        "description": "Yield Value"
+      },
+      {
+        "name": "expectedYieldUnits",
+        "type": "Optional",
+        "description": "Yield Units (e.g. KG)"
+      },
+      {
+        "name": "refrenceAreaUnits",
+        "type": "Optional",
+        "description": "Area Units (e.g. Acre)"
+      }
+    ],
+    "requiresLogin": true,
+    "generation_prompt": "Script Name: AddVariety\nExcel Columns: name,nickName,expectedHarvestDays,cropName,cropId,expectedYield,expectedYieldUnits,refrenceAreaUnits\n\nStep 1 [API]:\n  - Step/Variable Name: Crop API\n  - Call GET /services/farm/api/crops?size=1000\n  - Payload Type: QUERY\n  - Expected Response: [ {  \"id\" : 42851,  \"name\" : \"Brinjal\",  \"data\" : null,  \"parentId\" : null,  \"description\" : \"Brinjal Crop Description\",  \"alias\" : \"BRJ\",  \"srCropId\" : 40,  \"srCropCode\" : \"Brinjal\",  \"clientId\" : \"54dd149f-da01-4fe1-bb14-97c6a2c019f0\",  \"imageUrl\" : \"https://smartfarmplus-static.s3.ap-southeast-1.amazonaws.com/crop-images/brinjal.png\",  \"dewsEnabled\" : false}, {  \"id\" : 1001,  \"name\" : \"Wheat1\",  \"data\" : null,  \"parentId\" : null,  \"description\" : \"Wheat Crop Description\",  \"alias\" : \"WHT\",  \"srCropId\" : 23,  \"srCropCode\" : null,  \"clientId\" : \"72dd5baa-ebc8-4328-a290-98f6c2bfb7da\",  \"imageUrl\" : \"https://smartfarmplus-static.s3.ap-southeast-1.amazonaws.com/crop-images/wheat.png\",  \"dewsEnabled\" : false}]\n  - Instructions: Hit this API, get 'id' attribute for the column 'cropName' and write id in 'cropId' column\n\nStep 2 [LOGIC]:\n  - Logic: Create a static variable as \"locations\" and use below as values for the variable\n\"locations\": {\n                    \"bounds\": {\n                        \"northeast\": {\n                            \"lat\": 72.7087158,\n                            \"lng\": -66.3193754\n                        },\n                        \"southwest\": {\n                            \"lat\": 15.7760139,\n                            \"lng\": -173.2992296\n                        }\n                    },\n                    \"country\": \"United States\",\n                    \"placeId\": \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",\n                    \"latitude\": 38.7945952,\n                    \"longitude\": -106.5348379,\n                    \"geoInfo\": {\n                        \"type\": \"FeatureCollection\",\n                        \"features\": [{\n                                \"type\": \"Feature\",\n                                \"properties\": {},\n                                \"geometry\": {\n                                    \"type\": \"Polygon\",\n                                    \"coordinates\": [[[-173.2992296, 15.7760139], [-66.3193754, 15.7760139], [-66.3193754, 72.7087158], [-173.2992296, 72.7087158], [-173.2992296, 15.7760139]]]\n                                }\n                            }\n                        ]\n                    },\n                    \"name\": \"United States\"\n                }\n\nStep 3 [API]:\n  - Step/Variable Name: Add Variety API\n  - Call POST /services/farm/api/varieties\n  - Payload Type: JSON\n  - Payload Example: {    \"data\": {        \"yieldPerLocation\": [{                \"data\": {},                \"locations\": {                    \"bounds\": {                        \"northeast\": {                            \"lat\": 72.7087158,                            \"lng\": -66.3193754                        },                        \"southwest\": {                            \"lat\": 15.7760139,                            \"lng\": -173.2992296                        }                    },                    \"country\": \"United States\",                    \"placeId\": \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",                    \"latitude\": 38.7945952,                    \"longitude\": -106.5348379,                    \"geoInfo\": {                        \"type\": \"FeatureCollection\",                        \"features\": [{                                \"type\": \"Feature\",                                \"properties\": {},                                \"geometry\": {                                    \"type\": \"Polygon\",                                    \"coordinates\": [[[-173.2992296, 15.7760139], [-66.3193754, 15.7760139], [-66.3193754, 72.7087158], [-173.2992296, 72.7087158], [-173.2992296, 15.7760139]]]                                }                            }                        ]                    },                    \"name\": \"United States\"                },                \"expectedYield\": 999,                \"expectedYieldQuantity\": \"\",                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ]    },    \"cropId\": 1728101,    \"name\": \"RS Test API Create Carrot 2\",    \"nickName\": \"RSTACC2\",    \"expectedHarvestDays\": 120,    \"processStandardDeduction\": null,    \"cropPrice\": null,    \"cropStages\": [],    \"seedGrades\": [],    \"harvestGrades\": [],    \"id\": null,    \"varietyAdditionalAttributeList\": []}\n  - Expected Response: {    \"id\": 3785102,    \"name\": \"RS Test API Create Carrot 3\",    \"description\": null,    \"expectedHarvestDays\": 120,    \"expectedQuantityPerAcre\": null,    \"rejectionPercentage\": null,    \"harvestUnitId\": null,    \"processStandardDeduction\": null,    \"daysForPreHarvestSampling\": null,    \"preferredSKUTypeId\": null,    \"stripTestFlag\": null,    \"autoArchivePlotFlag\": null,    \"autoArchivePlotDays\": null,    \"data\": {        \"yieldPerLocation\": [            {                \"data\": {},                \"locations\": {                    \"id\": null,                    \"name\": \"USA\",                    \"administrativeAreaLevel5\": null,                    \"administrativeAreaLevel4\": null,                    \"administrativeAreaLevel3\": null,                    \"administrativeAreaLevel2\": null,                    \"administrativeAreaLevel1\": null,                    \"country\": null,                    \"latitude\": null,                    \"longitude\": null,                    \"sublocalityLevel1\": null,                    \"sublocalityLevel2\": null,                    \"sublocalityLevel3\": null,                    \"sublocalityLevel4\": null,                    \"sublocalityLevel5\": null,                    \"geoInfo\": null,                    \"bounds\": null,                    \"placeId\": null                },                \"expectedYield\": 999,                \"expectedYieldQuantity\": \"\",                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ],        \"companyYieldPerLocation\": [            {                \"expectedYield\": 999.0,                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ]    },    \"parentId\": null,    \"cropId\": 1728101,    \"cropName\": \"Carrot\",    \"srVarietyId\": null,    \"srCropCode\": \"Carrot\",    \"clientId\": \"0af8b8da-abaf-48a1-9607-5aa65417439e\",    \"nickName\": \"RSTACC3\",    \"cropKey\": null,    \"subCompanyIds\": null,    \"companyId\": 1251,    \"seedGrades\": [],    \"harvestGrades\": [],    \"varietyAdditionalAttributes\": [],    \"deleted\": false,    \"cropStages\": []}\n  - Instructions: create payload from below values 1. yieldPerLocation.locations - same as static variable 'locations' 2. yieldPerLocation.expectedYield from expectedYield column 3. yieldPerLocation.expectedYieldUnits from expectedYieldUnits column 4. yieldPerLocation.refrenceAreaUnits from refrenceAreaUnits column 5. 'cropId' from extracted cropId in column 'cropId' 6. 'name' from column 'name' 7. 'nickName' from column nickName 8. 'expectedHarvestDays' from column expectedHarvestDays\n\nStep 4 [LOGIC]:\n  - Logic: add 2 columns status and API response. Add the result accordingly\n\n"
+  },
+  {
+    "name": "AddVarietyWithCropStage.py",
+    "filename": "AddVarietyWithCropStage.py",
+    "team": "Both",
+    "description": "User Script",
+    "expected_columns": [
+      "name",
+      "nickName",
+      "expectedHarvestDays",
+      "cropName",
+      "cropId",
+      "expectedYield",
+      "expectedYieldUnits",
+      "refrenceAreaUnits",
+      "cropStagename",
+      "cropStagedaysAfterSowing",
+      "cropstagedata",
+      "varietyID"
+    ],
+    "columns": [
+      {
+        "name": "name",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "nickName",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "expectedHarvestDays",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropName",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropId",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "expectedYield",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "expectedYieldUnits",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "refrenceAreaUnits",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropStagename",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropStagedaysAfterSowing",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropstagedata",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "varietyID",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      }
+    ],
+    "requiresLogin": true,
+    "batchSize": 1,
+    "generation_prompt": "Script Name: AddVarietyWithCropStage\nExcel Columns: name,nickName,expectedHarvestDays,cropName,cropId,expectedYield,expectedYieldUnits,refrenceAreaUnits,cropStagename,cropStagedaysAfterSowing,cropstagedata,varietyID\n\nStep 1 [API]:\n  - Step/Variable Name: /services/farm/api/crop-stages\n  - Call GET /services/farm/api/crop-stages\n  - Run Once: Yes (Master Data / Setup Step)\n  - Payload Type: QUERY\n  - Expected Response: [ {  \"id\" : 99152,  \"name\" : \"2-Sown\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"c54000c2-58b1-49a9-839e-32884ba61dac\"}, {  \"id\" : 99002,  \"name\" : \"3-Transplanting\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"6bbfad86-d78e-49f1-9350-7f1c599d04e9\"}, {  \"id\" : 99052,  \"name\" : \"4-Blooming, pollination, maturing\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"8206e270-6901-48b3-9a22-8f2b5d053e2c\"}, {  \"id\" : 99102,  \"name\" : \"5-Harvesting\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"2c0616ad-f3fc-4e16-bfec-ac3b56871772\"} ]\n  - Instructions: hit the API only once. Get the response and use for all rows, compare response attribute \"name\" for column 'cropStagename'. write the response for each name in column 'cropstagedata' by replacing attribute 'daysAfterSowing' with the numeric value in column 'cropStagedaysAfterSowing', if empty 'cropStagedaysAfterSowing' use same as in response. If not found, write as 'Invalid Crop Stage'\n\nStep 2 [API]:\n  - Step/Variable Name: Crop API\n  - Call GET /services/farm/api/crops?size=1000\n  - Run Once: Yes (Master Data / Setup Step)\n  - Payload Type: QUERY\n  - Expected Response: [ {  \"id\" : 42851,  \"name\" : \"Brinjal\",  \"data\" : null,  \"parentId\" : null,  \"description\" : \"Brinjal Crop Description\",  \"alias\" : \"BRJ\",  \"srCropId\" : 40,  \"srCropCode\" : \"Brinjal\",  \"clientId\" : \"54dd149f-da01-4fe1-bb14-97c6a2c019f0\",  \"imageUrl\" : \"https://smartfarmplus-static.s3.ap-southeast-1.amazonaws.com/crop-images/brinjal.png\",  \"dewsEnabled\" : false}, {  \"id\" : 1001,  \"name\" : \"Wheat1\",  \"data\" : null,  \"parentId\" : null,  \"description\" : \"Wheat Crop Description\",  \"alias\" : \"WHT\",  \"srCropId\" : 23,  \"srCropCode\" : null,  \"clientId\" : \"72dd5baa-ebc8-4328-a290-98f6c2bfb7da\",  \"imageUrl\" : \"https://smartfarmplus-static.s3.ap-southeast-1.amazonaws.com/crop-images/wheat.png\",  \"dewsEnabled\" : false}]\n  - Instructions: Hit this API only once, get 'id' attribute for the column 'cropName' and update id in 'cropId' column. use the same response for all rows\n\nStep 3 [LOGIC]:\n  - Logic: Create a static variable as \"locations\" and use below as values for the variable\n{\n                    \"bounds\": {\n                        \"northeast\": {\n                            \"lat\": 72.7087158,\n                            \"lng\": -66.3193754\n                        },\n                        \"southwest\": {\n                            \"lat\": 15.7760139,\n                            \"lng\": -173.2992296\n                        }\n                    },\n                    \"country\": \"United States\",\n                    \"placeId\": \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",                    \"latitude\": 38.7945952,\n                    \"longitude\": -106.5348379,\n                    \"geoInfo\": {\n                        \"type\": \"FeatureCollection\",\n                        \"features\": [{\n                                \"type\": \"Feature\",\n                                \"properties\": {},\n                                \"geometry\": {\n                                    \"type\": \"Polygon\",\n                                    \"coordinates\": [[[-173.2992296, 15.7760139], [-66.3193754, 15.7760139], [-66.3193754, 72.7087158], [-173.2992296, 72.7087158], [-173.2992296, 15.7760139]]]\n                                }\n                            }\n                        ]\n                    },\n                    \"name\": \"United States\"\n                }\n\nStep 4 [API]:\n  - Step/Variable Name: Add Variety API\n  - Call POST /services/farm/api/varieties\n  - Payload Type: JSON\n  - Payload Example: {    \"data\": {        \"yieldPerLocation\": [{                \"data\": {},                \"locations\": {                    \"bounds\": {                        \"northeast\": {                            \"lat\": 72.7087158,                            \"lng\": -66.3193754                        },                        \"southwest\": {                            \"lat\": 15.7760139,                            \"lng\": -173.2992296                        }                    },                    \"country\": \"United States\",                    \"placeId\": \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",                    \"latitude\": 38.7945952,                    \"longitude\": -106.5348379,                    \"geoInfo\": {                        \"type\": \"FeatureCollection\",                        \"features\": [{                                \"type\": \"Feature\",                                \"properties\": {},                                \"geometry\": {                                    \"type\": \"Polygon\",                                    \"coordinates\": [[[-173.2992296, 15.7760139], [-66.3193754, 15.7760139], [-66.3193754, 72.7087158], [-173.2992296, 72.7087158], [-173.2992296, 15.7760139]]]                                }                            }                        ]                    },                    \"name\": \"United States\"                },                \"expectedYield\": 999,                \"expectedYieldQuantity\": \"\",                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ]    },    \"cropId\": 1728101,    \"name\": \"RS Test API Create Carrot 2\",    \"nickName\": \"RSTACC2\",    \"expectedHarvestDays\": 120,    \"processStandardDeduction\": null,    \"cropPrice\": null,    \"cropStages\": [],    \"seedGrades\": [],    \"harvestGrades\": [],    \"id\": null,    \"varietyAdditionalAttributeList\": []}\n  - Expected Response: {    \"id\": 3785102,    \"name\": \"RS Test API Create Carrot 3\",    \"description\": null,    \"expectedHarvestDays\": 120,    \"expectedQuantityPerAcre\": null,    \"rejectionPercentage\": null,    \"harvestUnitId\": null,    \"processStandardDeduction\": null,    \"daysForPreHarvestSampling\": null,    \"preferredSKUTypeId\": null,    \"stripTestFlag\": null,    \"autoArchivePlotFlag\": null,    \"autoArchivePlotDays\": null,    \"data\": {        \"yieldPerLocation\": [            {                \"data\": {},                \"locations\": {                    \"id\": null,                    \"name\": \"USA\",                    \"administrativeAreaLevel5\": null,                    \"administrativeAreaLevel4\": null,                    \"administrativeAreaLevel3\": null,                    \"administrativeAreaLevel2\": null,                    \"administrativeAreaLevel1\": null,                    \"country\": null,                    \"latitude\": null,                    \"longitude\": null,                    \"sublocalityLevel1\": null,                    \"sublocalityLevel2\": null,                    \"sublocalityLevel3\": null,                    \"sublocalityLevel4\": null,                    \"sublocalityLevel5\": null,                    \"geoInfo\": null,                    \"bounds\": null,                    \"placeId\": null                },                \"expectedYield\": 999,                \"expectedYieldQuantity\": \"\",                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ],        \"companyYieldPerLocation\": [            {                \"expectedYield\": 999.0,                \"expectedYieldUnits\": \"KILOGRAM\",                \"refrenceAreaUnits\": \"ACRE\"            }        ]    },    \"parentId\": null,    \"cropId\": 1728101,    \"cropName\": \"Carrot\",    \"srVarietyId\": null,    \"srCropCode\": \"Carrot\",    \"clientId\": \"0af8b8da-abaf-48a1-9607-5aa65417439e\",    \"nickName\": \"RSTACC3\",    \"cropKey\": null,    \"subCompanyIds\": null,    \"companyId\": 1251,    \"seedGrades\": [],    \"harvestGrades\": [],    \"varietyAdditionalAttributes\": [],    \"deleted\": false,    \"cropStages\": [{            \"id\": 3785552,            \"name\": \"RS Test 1\",            \"description\": null,            \"daysAfterSowing\": 10,            \"imageUrl\": null,            \"clientId\": \"d6443380-0f0e-4c5b-895e-376f36147d62\"        }, {            \"id\": 3785602,            \"name\": \"RS Test 2\",            \"description\": null,            \"daysAfterSowing\": 30,            \"imageUrl\": null,            \"clientId\": \"7c5e3eca-ff02-4512-aae6-3667144ddbb8\"        }]}\n  - Instructions: create payload from below values  1. yieldPerLocation.locations - same as static variable 'locations'  2. yieldPerLocation.expectedYield from expectedYield column  3. yieldPerLocation.expectedYieldUnits from expectedYieldUnits column  4. yieldPerLocation.refrenceAreaUnits from refrenceAreaUnits column  5. 'cropId' from extracted cropId in column 'cropId'  6. 'name' from column 'name'  7. 'nickName' from column nickName  8. 'expectedHarvestDays' from column expectedHarvestDays  9. 'cropStages' using column 'cropstagedata' with comma separated for multiple cropstages on the next row check for the 'name', if it is same, directly check the 'cropStagename' and add its 'cropstagedata' in the payload and continue same till next different name found. 1 API call should have 'name' with all its 'cropStagename' details. use only valid detected data ignore the invalid cropstages. use cropstages without days also\n\nStep 5 [LOGIC]:\n  - Logic: 1. add 2 columns status and API response. Add the result accordingly.\n2. Save the value of attribute 'id' in column 'varietyID'\n3. If the response code is 400, write the attribute 'title' value in API Response\n\n",
+    "isMultithreaded": true,
+    "groupByColumn": "name"
+  },
+  {
+    "name": "AddCropStagetoVariety.py",
+    "filename": "AddCropStagetoVariety.py",
+    "team": "QA",
+    "description": "User Script",
+    "expected_columns": [
+      "name",
+      "varietyID",
+      "cropStagename",
+      "cropStagedaysAfterSowing",
+      "cropstagedata"
+    ],
+    "columns": [
+      {
+        "name": "name",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "varietyID",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropStagename",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropStagedaysAfterSowing",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      },
+      {
+        "name": "cropstagedata",
+        "type": "Mandatory",
+        "description": "Auto-detected"
+      }
+    ],
+    "requiresLogin": true,
+    "groupByColumn": "name",
+    "generation_prompt": "Script Name: AddCropStagetoVariety\nExcel Columns: name,varietyID,cropStagename,cropStagedaysAfterSowing,cropstagedata\n\nStep 1 [API]:\n  - Step/Variable Name: /services/farm/api/crop-stages\n  - Call GET /services/farm/api/crop-stages\n  - Run Once: Yes (Master Data / Setup Step)\n  - Payload Type: QUERY\n  - Expected Response: [ {  \"id\" : 99152,  \"name\" : \"2-Sown\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"c54000c2-58b1-49a9-839e-32884ba61dac\"}, {  \"id\" : 99002,  \"name\" : \"3-Transplanting\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"6bbfad86-d78e-49f1-9350-7f1c599d04e9\"}, {  \"id\" : 99052,  \"name\" : \"4-Blooming, pollination, maturing\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"8206e270-6901-48b3-9a22-8f2b5d053e2c\"}, {  \"id\" : 99102,  \"name\" : \"5-Harvesting\",  \"description\" : null,  \"daysAfterSowing\" : null,  \"imageUrl\" : null,  \"clientId\" : \"2c0616ad-f3fc-4e16-bfec-ac3b56871772\"} ]\n  - Instructions: hit the API only once. Get the response and use for all rows, compare response attribute \"name\" for column 'cropStagename'. write the response for each name in column 'cropstagedata' by replacing attribute 'daysAfterSowing' with the numeric value in column 'cropStagedaysAfterSowing'. If not found, write as 'Invalid Crop Stage'\n\nStep 2 [API]:\n  - Step/Variable Name: Search Variety API\n  - Call GET /services/farm/api/varieties/{varietyID}\n  - Payload Type: QUERY\n  - Expected Response: {  \"id\" : 3786002,  \"name\" : \"RS Test AI 1\",  \"description\" : null,  \"expectedHarvestDays\" : 55,  \"expectedQuantityPerAcre\" : null,  \"rejectionPercentage\" : null,  \"harvestUnitId\" : null,  \"processStandardDeduction\" : null,  \"daysForPreHarvestSampling\" : null,  \"preferredSKUTypeId\" : null,  \"stripTestFlag\" : null,  \"autoArchivePlotFlag\" : null,  \"autoArchivePlotDays\" : null,  \"data\" : {    \"yieldPerLocation\" : [ {      \"data\" : { },      \"locations\" : {        \"id\" : 2280451,        \"name\" : \"United States\",        \"bounds\" : {          \"northeast\" : {            \"lat\" : 72.7087158,            \"lng\" : -66.3193754          },          \"southwest\" : {            \"lat\" : 15.7760139,            \"lng\" : -173.2992296          }        },        \"country\" : \"United States\",        \"geoInfo\" : {          \"type\" : \"FeatureCollection\",          \"features\" : [ {            \"type\" : \"Feature\",            \"geometry\" : {              \"type\" : \"Polygon\",              \"coordinates\" : [ [ [ -173.2992296, 15.7760139 ], [ -66.3193754, 15.7760139 ], [ -66.3193754, 72.7087158 ], [ -173.2992296, 72.7087158 ], [ -173.2992296, 15.7760139 ] ] ]            },            \"properties\" : { }          } ]        },        \"placeId\" : \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",        \"latitude\" : null,        \"longitude\" : null,        \"sublocalityLevel1\" : null,        \"sublocalityLevel2\" : null,        \"sublocalityLevel3\" : null,        \"sublocalityLevel4\" : null,        \"sublocalityLevel5\" : null,        \"administrativeAreaLevel1\" : null,        \"administrativeAreaLevel2\" : null,        \"administrativeAreaLevel3\" : null,        \"administrativeAreaLevel4\" : null,        \"administrativeAreaLevel5\" : null      },      \"expectedYield\" : 600,      \"refrenceAreaUnits\" : \"ACRE\",      \"expectedYieldUnits\" : \"KILOGRAM\",      \"expectedYieldQuantity\" : \"\"    } ],    \"companyYieldPerLocation\" : [ {      \"expectedYield\" : 600.0,      \"refrenceAreaUnits\" : \"ACRE\",      \"expectedYieldUnits\" : \"KILOGRAM\"    } ]  },  \"parentId\" : null,  \"cropId\" : 42851,  \"cropName\" : \"Brinjal\",  \"srVarietyId\" : null,  \"srCropCode\" : \"Brinjal\",  \"clientId\" : \"ea10ba17-4dc5-463a-a3ea-a36578976e60\",  \"nickName\" : \"rstAI1\",  \"cropKey\" : null,  \"subCompanyIds\" : [ ],  \"companyId\" : 1251,  \"seedGrades\" : [ ],  \"harvestGrades\" : [ ],  \"varietyAdditionalAttributes\" : [ ],  \"deleted\" : false,  \"cropStages\" : [ {    \"name\" : \"RS Crop Stage 1\",    \"description\" : null,    \"daysAfterSowing\" : 10,    \"variety\" : null,    \"formId\" : null,    \"clientId\" : \"2ac0aba8-72c1-4755-89f8-cff62fb262bf\",    \"externalId\" : null,    \"varietyId\" : null,    \"id\" : 86351  }, {    \"name\" : \"RS Crop Stage 2\",    \"description\" : null,    \"daysAfterSowing\" : 20,    \"variety\" : null,    \"formId\" : null,    \"clientId\" : \"0c0b00aa-61a2-4baf-8fcb-11cf5fb93060\",    \"externalId\" : null,    \"varietyId\" : null,    \"id\" : 86401  }]}\n  - Instructions: get the API response for the column varietyID\n\nStep 3 [LOGIC]:\n  - Logic: replace the 'cropStages' attribute values in the same response with 'cropStages' values created as below values \n1.  'expectedHarvestDays' from column expectedHarvestDays \n2. 'cropStages' using column 'cropstagedata' with comma separated for multiple cropstages. \non the next row check for the 'name', if it is same, directly check the 'cropStagename' and add its 'cropstagedata' in the payload and continue same till next different name found. \n1 'varietyID' API call should have 'name' with all its 'cropStagename' details. use only valid detected data ignore the invalid cropstages\n\nStep 4 [API]:\n  - Step/Variable Name: Update Variety API\n  - Call PUT /services/farm/api/varieties\n  - Payload Type: JSON\n  - Expected Response: {  \"id\" : 3786002,  \"name\" : \"RS Test AI 1\",  \"description\" : null,  \"expectedHarvestDays\" : 55,  \"expectedQuantityPerAcre\" : null,  \"rejectionPercentage\" : null,  \"harvestUnitId\" : null,  \"processStandardDeduction\" : null,  \"daysForPreHarvestSampling\" : null,  \"preferredSKUTypeId\" : null,  \"stripTestFlag\" : null,  \"autoArchivePlotFlag\" : null,  \"autoArchivePlotDays\" : null,  \"data\" : {    \"yieldPerLocation\" : [ {      \"data\" : { },      \"locations\" : {        \"id\" : 2280451,        \"name\" : \"United States\",        \"bounds\" : {          \"northeast\" : {            \"lat\" : 72.7087158,            \"lng\" : -66.3193754          },          \"southwest\" : {            \"lat\" : 15.7760139,            \"lng\" : -173.2992296          }        },        \"country\" : \"United States\",        \"geoInfo\" : {          \"type\" : \"FeatureCollection\",          \"features\" : [ {            \"type\" : \"Feature\",            \"geometry\" : {              \"type\" : \"Polygon\",              \"coordinates\" : [ [ [ -173.2992296, 15.7760139 ], [ -66.3193754, 15.7760139 ], [ -66.3193754, 72.7087158 ], [ -173.2992296, 72.7087158 ], [ -173.2992296, 15.7760139 ] ] ]            },            \"properties\" : { }          } ]        },        \"placeId\" : \"ChIJCzYy5IS16lQRQrfeQ5K5Oxw\",        \"latitude\" : null,        \"longitude\" : null,        \"sublocalityLevel1\" : null,        \"sublocalityLevel2\" : null,        \"sublocalityLevel3\" : null,        \"sublocalityLevel4\" : null,        \"sublocalityLevel5\" : null,        \"administrativeAreaLevel1\" : null,        \"administrativeAreaLevel2\" : null,        \"administrativeAreaLevel3\" : null,        \"administrativeAreaLevel4\" : null,        \"administrativeAreaLevel5\" : null      },      \"expectedYield\" : 600,      \"refrenceAreaUnits\" : \"ACRE\",      \"expectedYieldUnits\" : \"KILOGRAM\",      \"expectedYieldQuantity\" : \"\"    } ],    \"companyYieldPerLocation\" : [ {      \"expectedYield\" : 600.0,      \"refrenceAreaUnits\" : \"ACRE\",      \"expectedYieldUnits\" : \"KILOGRAM\"    } ]  },  \"parentId\" : null,  \"cropId\" : 42851,  \"cropName\" : \"Brinjal\",  \"srVarietyId\" : null,  \"srCropCode\" : \"Brinjal\",  \"clientId\" : \"ea10ba17-4dc5-463a-a3ea-a36578976e60\",  \"nickName\" : \"rstAI1\",  \"cropKey\" : null,  \"subCompanyIds\" : [ ],  \"companyId\" : 1251,  \"seedGrades\" : [ ],  \"harvestGrades\" : [ ],  \"varietyAdditionalAttributes\" : [ ],  \"deleted\" : false,  \"cropStages\" : [ {    \"name\" : \"RS Crop Stage 1\",    \"description\" : null,    \"daysAfterSowing\" : 10,    \"variety\" : null,    \"formId\" : null,    \"clientId\" : \"2ac0aba8-72c1-4755-89f8-cff62fb262bf\",    \"externalId\" : null,    \"varietyId\" : null,    \"id\" : 86351  }, {    \"name\" : \"RS Crop Stage 2\",    \"description\" : null,    \"daysAfterSowing\" : 20,    \"variety\" : null,    \"formId\" : null,    \"clientId\" : \"0c0b00aa-61a2-4baf-8fcb-11cf5fb93060\",    \"externalId\" : null,    \"varietyId\" : null,    \"id\" : 86401  }]}\n  - Instructions: hit the API with the complete response body for each 'varietyID' with replaced cropstage attribute value.\n\nStep 5 [LOGIC]:\n  - Logic: 1. add 2 columns status and API response. Add the result accordingly.\n2. If the response code is 400, write the attribute 'title' value in API Response\n\n"
+  }
+]

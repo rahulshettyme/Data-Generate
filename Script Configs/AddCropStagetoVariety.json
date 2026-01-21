@@ -1,0 +1,41 @@
+{
+    "name": "AddCropStagetoVariety.py",
+    "filename": "AddCropStagetoVariety.py",
+    "team": "QA",
+    "description": "User Script",
+    "expected_columns": [
+        "name",
+        "varietyID",
+        "cropStagename",
+        "cropStagedaysAfterSowing",
+        "cropstagedata"
+    ],
+    "columns": [
+        {
+            "name": "name",
+            "type": "Mandatory",
+            "description": "Auto-detected"
+        },
+        {
+            "name": "varietyID",
+            "type": "Mandatory",
+            "description": "Auto-detected"
+        },
+        {
+            "name": "cropStagename",
+            "type": "Mandatory",
+            "description": "Auto-detected"
+        },
+        {
+            "name": "cropStagedaysAfterSowing",
+            "type": "Mandatory",
+            "description": "Auto-detected"
+        },
+        {
+            "name": "cropstagedata",
+            "type": "Mandatory",
+            "description": "Auto-detected"
+        }
+    ],
+    "requiresLogin": true
+}

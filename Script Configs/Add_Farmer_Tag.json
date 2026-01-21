@@ -1,0 +1,28 @@
+{
+    "name": "Add Farmer Tag.py",
+    "filename": "Add_Farmer_Tag.py",
+    "team": "QA",
+    "description": "Adds a tag to a farmer.",
+    "expected_columns": [
+        "Farmer ID",
+        "Tag Name"
+    ],
+    "columns": [
+        {
+            "name": "Farmer ID",
+            "type": "Optional",
+            "description": "Farmer ID (or use Code)"
+        },
+        {
+            "name": "Farmer Code",
+            "type": "Optional",
+            "description": "Farmer Code (if ID not known)"
+        },
+        {
+            "name": "Tag Name",
+            "type": "Mandatory",
+            "description": "Name of Tag to add"
+        }
+    ],
+    "requiresLogin": true
+}
