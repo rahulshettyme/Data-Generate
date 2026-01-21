@@ -12,6 +12,7 @@ let executionResults = [];
 let savedLocations = [];
 let ENVIRONMENT_API_URLS = {};
 let ENVIRONMENT_URLS = {};
+let loginComponent = null;
 
 // Load Env URLs on start
 async function loadEnvUrls() {
@@ -384,13 +385,24 @@ function handleTeamSelection(team) {
         });
 
         // Handle Environment Visibility based on Team
+        // Handle Environment Visibility based on Team
         if (team === 'cs_team') {
-            if (elements.loginEnvGroup) elements.loginEnvGroup.classList.add('hidden');
-            // Also hide the environment dropdown itself if it's part of a custom-dropdown structure
-            if (elements.envDisplay) elements.envDisplay.closest('.custom-dropdown').parentElement.classList.add('hidden');
+            if (loginComponent) {
+                loginComponent.setEnvironment('Prod', true);
+            }
         } else {
-            if (elements.loginEnvGroup) elements.loginEnvGroup.classList.remove('hidden');
-            if (elements.envDisplay) elements.envDisplay.closest('.custom-dropdown').parentElement.classList.remove('hidden');
+            if (loginComponent) {
+                // Unlock, and optimaly reset if it was locked to Prod, or just leave it
+                loginComponent.setEnvironment('QA1', false); // defaulting to QA1 or just unlocking
+                // better to just unlock, but maybe better to reset to "Select Environment" or keep as is?
+                // For now, let's just unlock. To unlock without changing value:
+                // loginComponent.setEnvironment(null, false);
+                // But if they switch back from CS, 'Prod' remains selected. 
+                // Let's reset to QA1 as that is the common default for QA team.
+                // Or "Select Environment"
+                // loginComponent.setEnvironment('Select Environment', false); // This puts 'Select Environment' as value? No
+                // logic in setEnvironment handles text update.
+            }
         }
 
         // Clear list
@@ -937,7 +949,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const envKeys = Object.keys(ENVIRONMENT_API_URLS);
     const envList = envKeys.length > 0 ? envKeys : ["QA1", "QA2", "QA3", "QA4", "QA5", "QA6", "QA7", "QA8", "Prod"];
 
-    new LoginComponent("login-component-container", {
+    loginComponent = new LoginComponent("login-component-container", {
         envList: envList,
         onLoginSuccess: (token, userDetails) => {
             authToken = token;

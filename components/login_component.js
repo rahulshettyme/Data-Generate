@@ -218,4 +218,33 @@ class LoginComponent {
             });
         });
     }
+
+    setEnvironment(envName, isLocked = false) {
+        const display = this.container.querySelector('#lc-env-display');
+        const input = this.container.querySelector('#lc-env-input');
+        const dropdown = this.container.querySelector('#lc-env-dropdown');
+
+        if (!display || !input) return;
+
+        if (envName) {
+            display.textContent = envName;
+            input.value = envName;
+        }
+
+        if (isLocked) {
+            display.classList.add('disabled');
+            display.style.pointerEvents = 'none';
+            display.style.opacity = '0.7';
+            display.style.backgroundColor = '#f1f3f4';
+            dropdown.classList.add('locked'); // optional marker
+        } else {
+            display.classList.remove('disabled');
+            display.style.pointerEvents = 'auto';
+            display.style.opacity = '1';
+            display.style.backgroundColor = 'transparent';
+            dropdown.classList.remove('locked');
+            // If unlocking, maybe reset to "Select Environment" if value is forced? 
+            // Better to leave it as is or let user change it.
+        }
+    }
 }
